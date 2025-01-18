@@ -21,7 +21,7 @@ function matchGender(gender: string): boolean {
     return gender.includes("maleherm")
         || gender.includes("mascherm")
         || gender.includes("masculineherm")
-        || (gender.includes("mherm") && ! gender.includes("femherm") )
+        || (gender.includes("mherm") && !gender.includes("femherm"))
         || gender.includes("boyherm")
         || gender.includes("boiherm")
         || gender.includes("hermandrodite")

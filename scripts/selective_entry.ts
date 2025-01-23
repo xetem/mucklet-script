@@ -18,11 +18,11 @@ function matchGender(gender: string): boolean {
     gender = gender.replaceAll(".", "")
     gender = gender.replaceAll(" ", "")
     gender = gender.replaceAll("-", "")
-    return gender.includes("maleherm")
+    return (gender.includes("maleherm")
         || gender.includes("mascherm")
         || gender.includes("masculineherm")
         || (gender.includes("mherm") && !gender.includes("femherm"))
         || gender.includes("boyherm")
         || gender.includes("boiherm")
-        || gender.includes("hermandrodite")
+        || gender.includes("hermandrodite")) as boolean
 }

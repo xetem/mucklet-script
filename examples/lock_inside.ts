@@ -4,14 +4,10 @@
  * door so that the exit leading from the "outside" room to the "inside" room
  * may not be used while locked.
  *
- * To lock the door:
+ * The script adds two commands to the room:
  * ```
- * ooc lock
- * ```
- *
- * To unlock the door:
- * ```
- * ooc unlock
+ * lock door
+ * unlock door
  * ```
  *
  * The door will automatically be unlocked when there are no awake characters in
@@ -60,8 +56,9 @@ function isCharAwakeInRoom(charJson: string|null): boolean {
 }
 
 export function onActivate(): void {
-	// Start listening to any room events to catch "lock" or "unlock" commands.
-	Room.listen()
+	// Add commands to lock or unlock the door.
+	Room.addCommand("lock", new Command("lock door", "Locks the door."))
+	Room.addCommand("unlock", new Command("unlock door", "Unlocks the door."))
 	// Start listening to message from the outside room requesting an update.
 	Script.listen([outside])
 	// Start listening to character events to check for awake characters.
@@ -70,28 +67,32 @@ export function onActivate(): void {
 	updateOutside()
 }
 
-// onRoomEvent is called when an event occurs in this room.
-export function onRoomEvent(addr: string, ev: string): void {
-	// Quick exit if it isn't an "ooc" event
-	if (Event.getType(ev) != "ooc") {
-		return
-	}
-
+// onCommand is called when one of commands, added by the script, is used.
+export function onCommand(addr: string, cmdAction: CmdAction): void {
 	// Get the stored "locked" value to tell if the door is locked.
 	const locked = isLocked()
-	// Parse the ooc event.
-	const ooc = JSON.parse<Event.OOC>(ev)
 
-	if (ooc.msg.toLowerCase() == "lock" && !locked) {
-		// If someone ooc'ly said "lock" and the door was unlocked, lock it.
-		lock()
-		// Send a describe to the room to tell the door was locked.
-		Room.describe(`${ooc.char.name} locks the door.`)
-	} else if (ooc.msg.toLowerCase() == "unlock" && locked) {
-		// If someone ooc'ly said "unlock" and the door was locked, unlock it.
-		unlock()
-		// Send a describe to the room to tell the door is unlocked.
-		Room.describe(`${ooc.char.name} unlocks the door.`)
+	// Check which command was used
+	if (cmdAction.keyword == "lock") {
+		if (locked) {
+			// If the door is already locked, respond with a message.
+			cmdAction.info("The door is already locked.")
+		} else {
+			// If the door is not locked, lock the door.
+			lock()
+			// Send a describe to the room to tell the door was locked.
+			Room.describe(`${cmdAction.char.name} locks the door.`)
+		}
+	} else if (cmdAction.keyword == "unlock") {
+		if (!locked) {
+			// If the door is already unlocked, respond with a message.
+			cmdAction.info("The door is already unlocked.")
+		} else {
+			// If the door is locked, unlock the door.
+			unlock()
+			// Send a describe to the room to tell the door is unlocked.
+			Room.describe(`${cmdAction.char.name} unlocks the door.`)
+		}
 	}
 }
 

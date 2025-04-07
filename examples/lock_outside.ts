@@ -8,6 +8,7 @@
 // Post address to the inside room script. Replace this.
 // To get a room script's address, type: roomscript <KEYWORD>
 const inside = "room.aaaaaaaaaaaaaaaaaaaa#bbbbbbbbbbbbbbbbbbbb"
+
 // ID of the exit to lock/unlock. Replace this.
 // To get a room script's address, type: get exit <KEYWORD>
 // The leading # should not be included.
@@ -36,7 +37,7 @@ export function onMessage(addr: string, topic: string, dta: string, sender: stri
 
 // onExitUse is called when someone tries to use the exit. It will only be
 // called if `Room.listenExit` has been called prior to the event.
-export function onExitUse(addr: string, exitIntercept: ExitIntercept): void {
+export function onExitUse(addr: string, exitAction: ExitAction): void {
 	// We cancel the exit use attempt with a message.
-	exitIntercept.cancel("The door seems to be locked.")
+	exitAction.cancel("The door seems to be locked.")
 }
